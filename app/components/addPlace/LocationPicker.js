@@ -5,7 +5,6 @@ import { Colors } from "../../config/colors/colors";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getMapImage } from "../../util/googleMap";
 
-import * as Location from "expo-location";
 import OutlineButton from "../ui/OutlineButton";
 import LoadingOverlay from "../ui/LoadingOverlay";
 
@@ -19,6 +18,7 @@ export default function LocationPicker({
   const navigation = useNavigation();
 
   const coords = route.params?.coordinates;
+  const address = route.params?.address;
 
   const [isLoading, setisLoading] = useState(false);
 
@@ -29,37 +29,26 @@ export default function LocationPicker({
   };
 
   const getMapImageHandler = async () => {
-    setisLoading(true);
-    const response = await getMapImage({
-      lat: coords.latitude,
-      lng: coords.longitude,
-    });
-    setMapUri(response);
-    setisLoading(false);
-  };
-
-  const FormateAddress = (address) => {
-    return `${address.name} ${address.street} ${address.district} ${address.city} ${address.region} ${address.country}`;
-  };
-
-  const getAddress = async () => {
-    setisLoading(true);
-    const response = await Location.reverseGeocodeAsync({
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-    });
-    const formatedAddress = FormateAddress(response[0]);
-    setAddress(formatedAddress);
-    setisLoading(false);
+    try {
+      setisLoading(true);
+      const response = await getMapImage({
+        lat: coords.latitude,
+        lng: coords.longitude,
+      });
+      setMapUri(response);
+      setisLoading(false);
+    } catch (err) {
+      alert("Error try agian later");
+    }
   };
 
   useEffect(() => {
     if (coords) {
       setCoordinates(coords);
       getMapImageHandler();
-      getAddress();
+      setAddress(address)
     }
-  }, [coords]);
+  }, [coords,address]);
 
   return (
     <View>

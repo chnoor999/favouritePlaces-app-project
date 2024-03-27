@@ -35,49 +35,84 @@ export default function MapScreen({ navigation, route }) {
   const mapRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const SaveLocationHandler = useCallback(() => {
-    navigation.navigate("addPlace", { coordinates });
+  const FormateAddress = (address) => {
+    return `${address.name} ${address.street} ${address.district} ${address.city} ${address.region} ${address.country}`;
+  };
+
+  // NOTE: This funtion taken from chatgpt that remove dublicate words and remove null (for address)
+  function removeDuplicateWordsAndNull(text) {
+    let words = text.split(/\s+/);
+    let uniqueWords = [...new Set(words)];
+    let filteredWords = uniqueWords.filter(
+      (word) => word.trim() !== "" && word.toLowerCase() !== "null"
+    );
+    let result = filteredWords.join(" ");
+    return result;
+  }
+
+  const SaveLocationHandler = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await Location.reverseGeocodeAsync({
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+      });
+      const formatedAddress = FormateAddress(response[0]);
+      navigation.navigate("addPlace", {
+        coordinates,
+        address: removeDuplicateWordsAndNull(formatedAddress),
+      });
+      setIsLoading(false);
+    } catch (err) {
+      alert("Please Select Valid Location");
+      setIsLoading(false);
+    }
   }, [coordinates]);
 
   const getCurrentLocation = async () => {
-    const permission = await Location.requestForegroundPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert(
-        "Location Access Required",
-        "To use the Location feature, please grant permission from your device settings.",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Go to Settings",
-            onPress: () => Linking.openSettings(),
-          },
-        ]
-      );
-      return;
-    }
-    if (permission.granted) {
-      try {
-        setIsLoading(true);
-        const location = await Location.getCurrentPositionAsync();
-        setIsLoading(false);
-        setCoordinates({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.002,
-          longitudeDelta: 0.002,
-        });
-        mapRef.current.animateToRegion({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.002,
-          longitudeDelta: 0.002,
-        });
-      } catch (err) {
-        alert("Fail to Fetch Location");
+    try {
+      const permission = await Location.requestForegroundPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          "Location Access Required",
+          "To use the Location feature, please grant permission from your device settings.",
+          [
+            {
+              text: "Cancel",
+              style: "cancel",
+            },
+            {
+              text: "Go to Settings",
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+        return;
       }
+      if (permission.granted) {
+        try {
+          setIsLoading(true);
+          const location = await Location.getCurrentPositionAsync();
+          setIsLoading(false);
+          setCoordinates({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.002,
+            longitudeDelta: 0.002,
+          });
+          mapRef.current.animateToRegion({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+            latitudeDelta: 0.002,
+            longitudeDelta: 0.002,
+          });
+        } catch (err) {
+          alert("Fail to Fetch Live Location");
+          setIsLoading(false);
+        }
+      }
+    } catch (err) {
+      alert("Fail to grant location permission");
     }
   };
 

@@ -39,7 +39,7 @@ export default function AllPlaces({ navigation }) {
   }
 
   if (place.length <= 0) {
-    return <MessageOverLay meesage={"No Place Yet!"} />;
+    return <MessageOverLay meesage={"No Favourite Place Added Yet!"} />;
   }
 
   return <PlaceList data={place} />;

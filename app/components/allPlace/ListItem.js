@@ -4,8 +4,7 @@ import React from "react";
 import { Colors } from "../../config/colors/colors";
 import { useNavigation } from "@react-navigation/native";
 
-export default function ListItem({ imageUri, title, address, item }) {
-
+export default function ListItem({ imageUri, title, address, item, lastList }) {
   const navigation = useNavigation();
 
   const placeListHandler = () => {
@@ -16,7 +15,7 @@ export default function ListItem({ imageUri, title, address, item }) {
     <TouchableOpacity
       onPress={placeListHandler}
       activeOpacity={0.9}
-      style={styles.container}
+      style={[styles.container, { marginBottom: lastList && 50 }]}
     >
       <View style={styles.imgContainer}>
         <Image style={styles.image} source={{ uri: imageUri }} />
