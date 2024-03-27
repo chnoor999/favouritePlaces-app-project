@@ -17,9 +17,12 @@ import LoadingOverlay from "../../components/ui/LoadingOverlay";
 
 export default function MapScreen({ navigation, route }) {
   const takenCoordIfEditMode = route.params?.coords;
+  const viewCoords = route.params?.viewCoords;
 
   const [coordinates, setCoordinates] = useState(
-    takenCoordIfEditMode
+    viewCoords
+      ? { ...viewCoords }
+      : takenCoordIfEditMode
       ? { ...takenCoordIfEditMode }
       : {
           latitude: 0,
@@ -79,12 +82,18 @@ export default function MapScreen({ navigation, route }) {
   };
 
   useEffect(() => {
+    if (viewCoords) {
+      return;
+    }
     if (!takenCoordIfEditMode) {
       getCurrentLocation();
     }
   }, []);
 
   const mapHandler = (event) => {
+    if (viewCoords) {
+      return;
+    }
     setCoordinates({
       latitude: event.nativeEvent.coordinate.latitude,
       longitude: event.nativeEvent.coordinate.longitude,
@@ -125,12 +134,15 @@ export default function MapScreen({ navigation, route }) {
           );
         }
       } catch (err) {
-        alert("Error TryAgian Later");
+        alert("Error in Search TryAgian Later");
       }
     }
   };
 
   useLayoutEffect(() => {
+    if (viewCoords) {
+      return;
+    }
     navigation.setOptions({
       headerRight: () => (
         <IconButton
@@ -155,20 +167,24 @@ export default function MapScreen({ navigation, route }) {
       >
         <Marker coordinate={{ ...coordinates }}></Marker>
       </MapView>
-      <IconButton
-        MaterialIconsIcon
-        name={"my-location"}
-        size={22}
-        color={"#fff"}
-        style={styles.currentLocatonbutton}
-        onPress={getCurrentLocation}
-        underlayColor="#000000a5"
-      />
-      <SearchMapFelid
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        searchMapHandler={searchMapHandler}
-      />
+      {viewCoords ? null : (
+        <>
+          <IconButton
+            MaterialIconsIcon
+            name={"my-location"}
+            size={22}
+            color={"#fff"}
+            style={styles.currentLocatonbutton}
+            onPress={getCurrentLocation}
+            underlayColor="#000000a5"
+          />
+          <SearchMapFelid
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searchMapHandler={searchMapHandler}
+          />
+        </>
+      )}
       {isLoading && <LoadingOverlay />}
     </View>
   );

@@ -5,6 +5,7 @@ import { Colors } from "../../config/colors/colors";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getMapImage } from "../../util/googleMap";
 
+import * as Location from "expo-location";
 import OutlineButton from "../ui/OutlineButton";
 import LoadingOverlay from "../ui/LoadingOverlay";
 
@@ -12,6 +13,7 @@ export default function LocationPicker({
   setCoordinates,
   setMapUri,
   mapUri,
+  setAddress,
 }) {
   const route = useRoute();
   const navigation = useNavigation();
@@ -36,10 +38,26 @@ export default function LocationPicker({
     setisLoading(false);
   };
 
+  const FormateAddress = (address) => {
+    return `${address.name} ${address.street} ${address.district} ${address.city} ${address.region} ${address.country}`;
+  };
+
+  const getAddress = async () => {
+    setisLoading(true);
+    const response = await Location.reverseGeocodeAsync({
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+    });
+    const formatedAddress = FormateAddress(response[0]);
+    setAddress(formatedAddress);
+    setisLoading(false);
+  };
+
   useEffect(() => {
     if (coords) {
       setCoordinates(coords);
       getMapImageHandler();
+      getAddress();
     }
   }, [coords]);
 

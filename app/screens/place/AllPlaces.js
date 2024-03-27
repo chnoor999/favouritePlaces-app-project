@@ -1,6 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useLayoutEffect } from "react";
+import { usePlaceContext } from "../../store/place-context";
+
 import IconButton from "../../components/ui/IconButton";
+import PlaceList from "../../components/allPlace/PlaceList";
 
 export default function AllPlaces({ navigation }) {
   useLayoutEffect(() => {
@@ -17,11 +20,9 @@ export default function AllPlaces({ navigation }) {
     });
   }, []);
 
-  return (
-    <View>
-      <Text>AllPlaces</Text>
-    </View>
-  );
+  const { place } = usePlaceContext();
+
+  return <PlaceList data={place} />;
 }
 
 const styles = StyleSheet.create({});
