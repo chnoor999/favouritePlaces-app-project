@@ -3,10 +3,25 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import IconButton from "./IconButton";
 import { Colors } from "../../config/colors/colors";
 
-export default function OutlineButton({ children, iconName, onPress }) {
+export default function OutlineButton({
+  children,
+  iconName,
+  onPress,
+  iconStyle,
+}) {
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
-      <IconButton IoniconsIcon name={iconName} color={Colors.color1100} size={18} />
+    <TouchableOpacity
+      style={styles.container}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <IconButton
+        style={iconStyle}
+        IoniconsIcon
+        name={iconName}
+        color={Colors.color1100}
+        size={18}
+      />
       <Text style={styles.label}>{children}</Text>
     </TouchableOpacity>
   );
@@ -20,8 +35,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderColor: Colors.color1100,
     marginVertical: 10,
-    paddingHorizontal:10,
-    marginBottom:15
+    paddingHorizontal: 10,
+    marginBottom: 15,
   },
   label: {
     color: Colors.color1100,

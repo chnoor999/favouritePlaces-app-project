@@ -14,7 +14,7 @@ export default function PlaceDetail({ route, navigation }) {
 
   const handleDelete = useCallback(() => {
     deletePlace(item.id);
-    navigation.goBack()
+    navigation.goBack();
   }, [item.id]);
 
   useLayoutEffect(() => {
@@ -26,6 +26,7 @@ export default function PlaceDetail({ route, navigation }) {
           color={"#fff"}
           MaterialIconsIcon
           onPress={handleDelete}
+          style={styles.btn}
         />
       ),
     });
@@ -75,5 +76,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     height: 180,
     margin: 10,
+  },
+  btn: {
+    padding: 9,
   },
 });

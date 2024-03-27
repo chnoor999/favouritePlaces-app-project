@@ -2,14 +2,20 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import { Colors } from "../../config/colors/colors";
 
-export default function AppInput({ title, setTitle, label, ...props }) {
+export default function AppInput({
+  isTitleValid,
+  title,
+  setTitle,
+  label,
+  ...props
+}) {
   const onTitleChange = (txt) => {
     setTitle(txt);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, isTitleValid && styles.error]}>{label}</Text>
       <TextInput
         style={styles.input}
         {...props}
@@ -37,5 +43,8 @@ const styles = StyleSheet.create({
     padding: 5,
     fontFamily: "openSans",
     borderRadius: 6,
+  },
+  error: {
+    color: "tomato",
   },
 });

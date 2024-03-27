@@ -12,10 +12,14 @@ import React, { useState } from "react";
 import { Colors } from "../../config/colors/colors";
 
 import * as ImagePicker from "expo-image-picker";
-import LoadingOverlay from "../ui/LoadingOverlay"
+import LoadingOverlay from "../ui/LoadingOverlay";
 import OutlineButton from "../ui/OutlineButton";
 
-export default function AppImagePicker({ imageUri, setImageUri }) {
+export default function AppImagePicker({
+  imageUri,
+  setImageUri,
+  isImageUriValid,
+}) {
   const [isLoading, setIsLoading] = useState(false);
 
   const takeImageHandler = async () => {
@@ -94,11 +98,15 @@ export default function AppImagePicker({ imageUri, setImageUri }) {
     <View>
       <View style={styles.previewContainer}>
         {isLoading ? (
-          <LoadingOverlay/>
+          <LoadingOverlay />
         ) : imageUri ? (
           <Image source={{ uri: imageUri }} style={styles.image} />
         ) : (
-          <Text style={styles.previewFallback}>No Image Taken Yet!</Text>
+          <Text
+            style={[styles.previewFallback, isImageUriValid && styles.error]}
+          >
+            No Image Taken Yet!
+          </Text>
         )}
       </View>
       <View style={styles.btnsContainer}>
@@ -143,5 +151,8 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
+  },
+  error: {
+    color: "tomato",
   },
 });

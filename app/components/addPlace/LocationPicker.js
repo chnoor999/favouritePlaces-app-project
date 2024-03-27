@@ -13,6 +13,7 @@ export default function LocationPicker({
   setMapUri,
   mapUri,
   setAddress,
+  isLocationValid,
 }) {
   const route = useRoute();
   const navigation = useNavigation();
@@ -38,7 +39,8 @@ export default function LocationPicker({
       setMapUri(response);
       setisLoading(false);
     } catch (err) {
-      alert("Error try agian later");
+      alert("Error try agian later or Check your Internet Connection");
+      setisLoading(false);
     }
   };
 
@@ -46,9 +48,9 @@ export default function LocationPicker({
     if (coords) {
       setCoordinates(coords);
       getMapImageHandler();
-      setAddress(address)
+      setAddress(address);
     }
-  }, [coords,address]);
+  }, [coords, address]);
 
   return (
     <View>
@@ -58,7 +60,11 @@ export default function LocationPicker({
         ) : mapUri ? (
           <Image source={{ uri: mapUri }} style={styles.image} />
         ) : (
-          <Text style={styles.previewFallback}>No Location Picked Yet!</Text>
+          <Text
+            style={[styles.previewFallback, isLocationValid && styles.error]}
+          >
+            No Location Picked Yet!
+          </Text>
         )}
       </View>
 
@@ -98,5 +104,8 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
+  },
+  error: {
+    color: "tomato",
   },
 });

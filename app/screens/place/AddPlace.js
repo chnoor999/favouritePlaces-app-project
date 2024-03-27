@@ -14,6 +14,13 @@ export default function AddPlace({ navigation }) {
   const [mapUri, setMapUri] = useState("");
   const [address, setAddress] = useState("");
 
+  // validation state
+  const [validation, setValition] = useState({
+    titleValid: false,
+    imageValid: false,
+    MapUriValid: false,
+  });
+
   const { addPlace } = usePlaceContext();
 
   const addPlaceHandler = () => {
@@ -25,6 +32,11 @@ export default function AddPlace({ navigation }) {
       !coordinates.latitude ||
       !mapUri.length
     ) {
+      setValition({
+        titleValid: !validTitle,
+        imageValid: !imageUri,
+        MapUriValid: !mapUri,
+      });
       Alert.alert("Invalid Cradentials", "Enter right Cradential");
       return;
     } else {
@@ -41,13 +53,23 @@ export default function AddPlace({ navigation }) {
 
   return (
     <View style={styles.formContainer}>
-      <AppInput label={"Title"} title={title} setTitle={setTitle} />
-      <AppImagePicker imageUri={imageUri} setImageUri={setImageUri} />
+      <AppInput
+        isTitleValid={validation.titleValid}
+        label={"Title"}
+        title={title}
+        setTitle={setTitle}
+      />
+      <AppImagePicker
+        isImageUriValid={validation.imageValid}
+        imageUri={imageUri}
+        setImageUri={setImageUri}
+      />
       <LocationPicker
         setAddress={setAddress}
         setCoordinates={setCoordinates}
         mapUri={mapUri}
         setMapUri={setMapUri}
+        isLocationValid={validation.MapUriValid}
       />
 
       <AppButton onPress={addPlaceHandler}>Add Place</AppButton>
