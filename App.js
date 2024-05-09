@@ -2,7 +2,7 @@ import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Colors } from "./app/config/colors/colors";
-import { PlaceContextprovider } from "./app/store/place-context";
+import { PlaceContextProvider } from "./app/store/place-context";
 
 import PlacesStack from "./app/screens/navigation/PlacesStack";
 
@@ -20,11 +20,11 @@ export default function App() {
   return (
     <>
       <StatusBar barStyle={"light-content"} backgroundColor={Colors.color100} />
-      <PlaceContextprovider>
+      <PlaceContextProvider>
         <NavigationContainer>
           <PlacesStack />
         </NavigationContainer>
-      </PlaceContextprovider>
+      </PlaceContextProvider>
     </>
   );
 }

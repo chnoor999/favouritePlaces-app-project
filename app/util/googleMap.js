@@ -1,4 +1,4 @@
-const GOOGLE_KEY = `AIzaSyCqE4NxpQT4sLNdLubD0vxD9LpuL1_gVPo`
+const GOOGLE_KEY = `AIzaSyAC9ZoHMiIE-gDVLINysZHXLQ0di8JRne4`;
 
 export const getMapImage = async (coordinates) => {
   const res =

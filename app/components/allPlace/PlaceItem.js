@@ -22,7 +22,7 @@ const PlaceItem = ({ item }) => {
       style={[styles.container]}
     >
       <View style={styles.imgContainer}>
-        <Image style={styles.image} source={{ uri: item.imageUri }} />
+        <Image style={styles.image} source={{ uri: item.image }} />
       </View>
       <View style={styles.contentContainer}>
         <Text style={styles.title}>{item.title}</Text>

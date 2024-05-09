@@ -1,16 +1,22 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useCallback, useLayoutEffect } from "react";
+import { memo, useCallback, useLayoutEffect } from "react";
 import { usePlaceContext } from "../../store/place-context";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import { Entypo } from "@expo/vector-icons";
 
 import OutlineButton from "../../components/ui/OutlineButton";
 import IconButton from "../../components/ui/IconButton";
 
-export default function PlaceDetail({ route, navigation }) {
-  const item = route.params?.item;
-  const viewMapHandler = () => {
-    navigation.navigate("mapScreen", { viewCoords: item.coordinates });
-  };
+const PlaceDetail = ({ route, navigation }) => {
   const { deletePlace } = usePlaceContext();
+  const item = route.params?.item;
+
+  const viewMapHandler = useCallback(() => {
+    navigation.navigate("mapScreen", { viewCoords: item.pickedLocation });
+  }, [item]);
 
   const handleDelete = useCallback(() => {
     deletePlace(item.id);
@@ -26,21 +32,23 @@ export default function PlaceDetail({ route, navigation }) {
           color={"#fff"}
           MaterialIconsIcon
           onPress={handleDelete}
-          style={styles.btn}
         />
       ),
     });
-  }, [handleDelete]);
+  }, []);
 
   return (
     <ScrollView>
-      <Image style={styles.image} source={{ uri: item.imageUri }} />
+      <Image style={styles.image} source={{ uri: item.image }} />
       <View style={styles.detailContainer}>
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.address}>{item.address}</Text>
+        <Text style={styles.address}>
+          <Entypo name="address" size={hp(2)} color="#fff" />
+          {item.address}
+        </Text>
         <Image
           style={[styles.image, styles.mapImage]}
-          source={{ uri: item.mapUri }}
+          source={{ uri: item.mapImage }}
         />
         <OutlineButton onPress={viewMapHandler} iconName={"map"}>
           View on Map
@@ -48,36 +56,40 @@ export default function PlaceDetail({ route, navigation }) {
       </View>
     </ScrollView>
   );
-}
+};
+
+export default memo(PlaceDetail);
 
 const styles = StyleSheet.create({
   image: {
-    width: "100%",
-    height: 250,
+    width: wp(100),
+    height: hp(32),
   },
   detailContainer: {
-    padding: 15,
     alignItems: "center",
     justifyContent: "center",
+    paddingVertical: hp(1.2),
+    paddingHorizontal: wp(2),
   },
   title: {
     color: "#fff",
     fontFamily: "openSansBold",
-    fontSize: 18,
+    fontSize: hp(2.2),
     paddingVertical: 10,
   },
   address: {
     color: "#ffffffea",
     fontFamily: "openSans",
-    paddingVertical: 5,
     textAlign: "center",
+    fontSize: hp(1.8),
+    marginVertical: hp(0.6),
   },
   mapImage: {
     borderRadius: 6,
-    height: 180,
-    margin: 10,
-  },
-  btn: {
-    padding: 9,
+    marginHorizontal: wp(2),
+    marginBottom: hp(0.5),
+    width: "100%",
+    height: hp(20),
+    marginTop: hp(2),
   },
 });

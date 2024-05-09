@@ -6,7 +6,7 @@ import { getMapImage } from "../../util/googleMap";
 import OutlineButton from "../ui/OutlineButton";
 import AppImage from "../ui/AppImage";
 
-const LocationPicker = ({ setPlacesData, error, mapImageUri }) => {
+const LocationPicker = ({ setPlacesData, error, mapImageUri ,pickedLocationCoords}) => {
   const route = useRoute();
   const navigation = useNavigation();
 
@@ -16,8 +16,8 @@ const LocationPicker = ({ setPlacesData, error, mapImageUri }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const pickOnMapHandler = useCallback(async () => {
-    navigation.navigate("mapScreen", coords && { coords });
-  }, [coords]);
+    navigation.navigate("mapScreen", pickedLocationCoords && { pickedLocationCoords });
+  }, [pickedLocationCoords]);
 
   const getMapImageHandler = async () => {
     try {

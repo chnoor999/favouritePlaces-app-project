@@ -9,7 +9,7 @@ const placeContext = createContext({
   deletePlace: () => {},
 });
 
-export const PlaceContextprovider = ({ children }) => {
+export const PlaceContextProvider = ({ children }) => {
   const [place, setPlace] = useState([]);
 
   const addPlace = (placeObj) => {

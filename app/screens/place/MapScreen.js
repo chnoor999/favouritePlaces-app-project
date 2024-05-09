@@ -18,18 +18,17 @@ import SearchMapField from "../../components/addPlace/SearchMapField";
 import * as Location from "expo-location";
 import IconButton from "../../components/ui/IconButton";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
-import AddPlace from "./AddPlace";
 
 const MapScreen = ({ navigation, route }) => {
-  const takenCoordIfEditMode = route.params?.coords;
+  const editModeIfCoordTaken = route.params?.pickedLocationCoords;
   const viewCoords = route.params?.viewCoords;
 
   const mapRef = useRef(null);
   const [coordinates, setCoordinates] = useState(
     viewCoords
       ? { ...viewCoords }
-      : takenCoordIfEditMode
-      ? { ...takenCoordIfEditMode }
+      : editModeIfCoordTaken
+      ? { ...editModeIfCoordTaken }
       : {
           latitude: 0,
           longitude: 0,
@@ -55,24 +54,23 @@ const MapScreen = ({ navigation, route }) => {
   };
 
   const SaveLocationHandler = useCallback(async () => {
-    // try {
-    //   setIsLoading(true);
-    //   console.log(coordinates);
-    //   const response = await Location.reverseGeocodeAsync({
-    //     latitude: coordinates.latitude,
-    //     longitude: coordinates.longitude,
-    //   });
-    //   const formateAddress = FormateAddress(response[0]);
-    //   navigation.navigate("addPlace", {
-    //     coordinates,
-    //     address: removeDuplicateWordsAndNull(formateAddress),
-    //   });
-    //   setIsLoading(false);
-    // } catch (err) {
-    //   Alert.alert("Invalid Location", "Please Select Valid Location");
-    //   setIsLoading(false);
-    // }
-  }, []);
+    try {
+      setIsLoading(true);
+      const response = await Location.reverseGeocodeAsync({
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+      });
+      const formateAddress = FormateAddress(response[0]);
+      navigation.navigate("addPlace", {
+        coordinates,
+        address: removeDuplicateWordsAndNull(formateAddress),
+      });
+      setIsLoading(false);
+    } catch (err) {
+      Alert.alert("Invalid Location", "Please Select Valid Location");
+      setIsLoading(false);
+    }
+  }, [coordinates]);
 
   const getCurrentLocation = useCallback(async () => {
     try {
@@ -122,7 +120,7 @@ const MapScreen = ({ navigation, route }) => {
   }, []);
 
   useEffect(() => {
-    if (!takenCoordIfEditMode || !viewCoords) {
+    if (!editModeIfCoordTaken && !viewCoords) {
       getCurrentLocation();
     }
   }, []);
@@ -191,7 +189,7 @@ const MapScreen = ({ navigation, route }) => {
         />
       ),
     });
-  }, []);
+  }, [coordinates]);
 
   return (
     <View style={styles.container}>
