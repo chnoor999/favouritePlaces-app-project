@@ -20,7 +20,7 @@ Deletion:
 Users can delete places from the list.
 
 Data Storage:
-Place data is stored in sync storage.
+Place data is stored in AsyncStorage.
 
 Custom Fonts:
 The app utilizes custom fonts for styling

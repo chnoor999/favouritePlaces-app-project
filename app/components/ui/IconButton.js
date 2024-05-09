@@ -1,9 +1,10 @@
 import { StyleSheet, TouchableHighlight } from "react-native";
-
+import { memo } from "react";
+import { Entypo } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 
-export default function IconButton({
+const IconButton = ({
   IoniconsIcon,
   MaterialIconsIcon,
   name,
@@ -11,8 +12,9 @@ export default function IconButton({
   color,
   onPress,
   style,
+  entypo,
   underlayColor = "#ffffff13",
-}) {
+}) => {
   return (
     <TouchableHighlight
       style={[styles.iconContainer, style]}
@@ -24,17 +26,20 @@ export default function IconButton({
         {MaterialIconsIcon && (
           <MaterialIcons name={name} color={color} size={size} />
         )}
+        {entypo && <Entypo name={name} color={color} size={size} />}
       </>
     </TouchableHighlight>
   );
-}
+};
+
+export default memo(IconButton);
 
 const styles = StyleSheet.create({
   iconContainer: {
     padding: 6,
     borderRadius: 50,
     margin: 4,
-    alignItems:"center",
-    justifyContent:"center"
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

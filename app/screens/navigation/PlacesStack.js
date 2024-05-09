@@ -1,7 +1,6 @@
-import { StyleSheet } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-const Stack = createNativeStackNavigator();
 import { Colors } from "../../config/colors/colors";
+const Stack = createNativeStackNavigator();
 
 import AllPlaces from "../place/AllPlaces";
 import AddPlace from "../place/AddPlace";
@@ -44,5 +43,3 @@ export default function PlacesStack() {
     </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({});

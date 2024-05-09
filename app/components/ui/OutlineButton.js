@@ -1,14 +1,14 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { memo } from "react";
+import { Colors } from "../../config/colors/colors";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 import IconButton from "./IconButton";
-import { Colors } from "../../config/colors/colors";
 
-export default function OutlineButton({
-  children,
-  iconName,
-  onPress,
-  iconStyle,
-}) {
+const OutlineButton = ({ children, iconName, onPress, iconStyle }) => {
   return (
     <TouchableOpacity
       style={styles.container}
@@ -20,12 +20,14 @@ export default function OutlineButton({
         IoniconsIcon
         name={iconName}
         color={Colors.color1100}
-        size={18}
+        size={hp(2.4)}
       />
       <Text style={styles.label}>{children}</Text>
     </TouchableOpacity>
   );
-}
+};
+
+export default memo(OutlineButton);
 
 const styles = StyleSheet.create({
   container: {
@@ -34,13 +36,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderColor: Colors.color1100,
-    marginVertical: 10,
-    paddingHorizontal: 10,
-    marginBottom: 15,
+    paddingVertical: hp(0.2),
+    paddingHorizontal: wp(2),
+    marginTop: hp(1),
+    marginBottom: hp(2),
   },
   label: {
     color: Colors.color1100,
     fontFamily: "openSans",
-    fontSize: 16,
+    fontSize: hp(1.85),
   },
 });

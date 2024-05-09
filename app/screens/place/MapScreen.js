@@ -1,24 +1,30 @@
 import { Alert, Linking, StyleSheet, View } from "react-native";
-import React, {
+import {
+  memo,
   useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
   useState,
 } from "react";
-
 import { Colors } from "../../config/colors/colors";
 import MapView, { Marker } from "react-native-maps";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
-import SearchMapFelid from "../../components/addPlace/SearchMapFelid";
+import SearchMapField from "../../components/addPlace/SearchMapField";
 import * as Location from "expo-location";
 import IconButton from "../../components/ui/IconButton";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
+import AddPlace from "./AddPlace";
 
-export default function MapScreen({ navigation, route }) {
+const MapScreen = ({ navigation, route }) => {
   const takenCoordIfEditMode = route.params?.coords;
   const viewCoords = route.params?.viewCoords;
 
+  const mapRef = useRef(null);
   const [coordinates, setCoordinates] = useState(
     viewCoords
       ? { ...viewCoords }
@@ -31,16 +37,14 @@ export default function MapScreen({ navigation, route }) {
           longitudeDelta: 120,
         }
   );
-  const [searchQuery, setSearchQuery] = useState("");
-  const mapRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const FormateAddress = (address) => {
     return `${address.name} ${address.street} ${address.district} ${address.city} ${address.region} ${address.country}`;
   };
 
-  // NOTE: This funtion taken from chatgpt that remove dublicate words and remove null (for address)
-  function removeDuplicateWordsAndNull(text) {
+  // NOTE: This function taken from chatgpt that remove duplicate words and remove null (for address)
+  const removeDuplicateWordsAndNull = (text) => {
     let words = text.split(/\s+/);
     let uniqueWords = [...new Set(words)];
     let filteredWords = uniqueWords.filter(
@@ -48,28 +52,29 @@ export default function MapScreen({ navigation, route }) {
     );
     let result = filteredWords.join(" ");
     return result;
-  }
+  };
 
   const SaveLocationHandler = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await Location.reverseGeocodeAsync({
-        latitude: coordinates.latitude,
-        longitude: coordinates.longitude,
-      });
-      const formatedAddress = FormateAddress(response[0]);
-      navigation.navigate("addPlace", {
-        coordinates,
-        address: removeDuplicateWordsAndNull(formatedAddress),
-      });
-      setIsLoading(false);
-    } catch (err) {
-      alert("Please Select Valid Location");
-      setIsLoading(false);
-    }
-  }, [coordinates]);
+    // try {
+    //   setIsLoading(true);
+    //   console.log(coordinates);
+    //   const response = await Location.reverseGeocodeAsync({
+    //     latitude: coordinates.latitude,
+    //     longitude: coordinates.longitude,
+    //   });
+    //   const formateAddress = FormateAddress(response[0]);
+    //   navigation.navigate("addPlace", {
+    //     coordinates,
+    //     address: removeDuplicateWordsAndNull(formateAddress),
+    //   });
+    //   setIsLoading(false);
+    // } catch (err) {
+    //   Alert.alert("Invalid Location", "Please Select Valid Location");
+    //   setIsLoading(false);
+    // }
+  }, []);
 
-  const getCurrentLocation = async () => {
+  const getCurrentLocation = useCallback(async () => {
     try {
       const permission = await Location.requestForegroundPermissionsAsync();
       if (!permission.granted) {
@@ -114,18 +119,15 @@ export default function MapScreen({ navigation, route }) {
     } catch (err) {
       alert("Fail to grant location permission");
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (viewCoords) {
-      return;
-    }
-    if (!takenCoordIfEditMode) {
+    if (!takenCoordIfEditMode || !viewCoords) {
       getCurrentLocation();
     }
   }, []);
 
-  const mapHandler = (event) => {
+  const mapHandler = useCallback((event) => {
     if (viewCoords) {
       return;
     }
@@ -141,9 +143,9 @@ export default function MapScreen({ navigation, route }) {
       latitudeDelta: 0.002,
       longitudeDelta: 0.002,
     });
-  };
+  }, []);
 
-  const searchMapHandler = async () => {
+  const searchPlacesHandler = useCallback(async (searchQuery) => {
     if (searchQuery) {
       try {
         setIsLoading(true);
@@ -169,10 +171,10 @@ export default function MapScreen({ navigation, route }) {
           );
         }
       } catch (err) {
-        alert("Error in Search TryAgian Later");
+        alert("Error in Search TryAgain Later");
       }
     }
-  };
+  }, []);
 
   useLayoutEffect(() => {
     if (viewCoords) {
@@ -186,11 +188,10 @@ export default function MapScreen({ navigation, route }) {
           name={"save"}
           size={26}
           color={"#fff"}
-          style={styles.saveBtn}
         />
       ),
     });
-  }, [SaveLocationHandler]);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -209,21 +210,19 @@ export default function MapScreen({ navigation, route }) {
             name={"my-location"}
             size={22}
             color={"#fff"}
-            style={styles.currentLocatonbutton}
+            style={styles.currentLocationButton}
             onPress={getCurrentLocation}
             underlayColor="#000000a5"
           />
-          <SearchMapFelid
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            searchMapHandler={searchMapHandler}
-          />
+          <SearchMapField searchPlacesHandler={searchPlacesHandler} />
         </>
       )}
-      {isLoading && <LoadingOverlay />}
+      {isLoading && <LoadingOverlay absolute loadingColor={Colors.color100} />}
     </View>
   );
-}
+};
+
+export default memo(MapScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -232,13 +231,12 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  currentLocatonbutton: {
+  currentLocationButton: {
     position: "absolute",
-    bottom: 50,
-    left: 10,
     backgroundColor: Colors.color100,
     borderRadius: 50,
-    padding: 15,
+    padding: hp(1.7),
+    bottom: hp(5),
+    left: wp(2),
   },
-  saveBtn: { padding: 10, margin: 0 },
 });

@@ -1,23 +1,27 @@
-import { StyleSheet, View } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { memo, useEffect, useLayoutEffect, useState } from "react";
 import { usePlaceContext } from "../../store/place-context";
 
 import IconButton from "../../components/ui/IconButton";
 import PlaceList from "../../components/allPlace/PlaceList";
 import LoadingOverlay from "../../components/ui/LoadingOverlay";
-import MessageOverLay from "../../components/ui/MessageOverLay";
-import { Colors } from "../../config/colors/colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function AllPlaces({ navigation }) {
+const AllPlaces = ({ navigation }) => {
+  const { setPlace } = usePlaceContext();
+
   const [isLoading, setIsLoading] = useState(true);
-  const { setPlaceFromAsyncStorage, place } = usePlaceContext();
+
+  const getPlaceFromAsyncStorage = async () => {
+    setIsLoading(true);
+    const res = await AsyncStorage.getItem("place");
+    setIsLoading(false);
+    if (res) {
+      setPlace(JSON.parse(res));
+    }
+  };
 
   useEffect(() => {
-    (async () => {
-      setIsLoading(true)
-      const res = await setPlaceFromAsyncStorage();
-      setIsLoading(false);
-    })();
+    getPlaceFromAsyncStorage();
   }, []);
 
   useLayoutEffect(() => {
@@ -25,7 +29,7 @@ export default function AllPlaces({ navigation }) {
       headerRight: ({ tintColor }) => (
         <IconButton
           name={"add"}
-          size={30}
+          size={28}
           color={tintColor}
           onPress={() => navigation.navigate("addPlace")}
           IoniconsIcon
@@ -35,14 +39,10 @@ export default function AllPlaces({ navigation }) {
   }, []);
 
   if (isLoading) {
-    return <LoadingOverlay backgroundColor={Colors.color100} />;
+    return <LoadingOverlay loadingColor={"#fff"} />;
   }
 
-  if (place.length <= 0) {
-    return <MessageOverLay meesage={"No Favourite Place Added Yet!"} />;
-  }
+  return <PlaceList />;
+};
 
-  return <PlaceList data={place} />;
-}
-
-const styles = StyleSheet.create({});
+export default memo(AllPlaces);

@@ -1,21 +1,28 @@
 import { Alert, StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import { memo, useCallback, useRef, useState } from "react";
 import { usePlaceContext } from "../../store/place-context";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
 
 import AppInput from "../../components/addPlace/AppInput";
-import AppImagePicker from "../../components/addPlace/ImagePicker";
+import AppImagePicker from "../../components/addPlace/AppImagePicker";
 import LocationPicker from "../../components/addPlace/LocationPicker";
 import AppButton from "../../components/ui/AppButton";
 
-export default function AddPlace({ navigation }) {
-  const [title, setTitle] = useState("");
-  const [imageUri, setImageUri] = useState("");
-  const [coordinates, setCoordinates] = useState("");
-  const [mapUri, setMapUri] = useState("");
-  const [address, setAddress] = useState("");
+const AddPlace = ({ navigation }) => {
+  const titleInpRef = useRef();
+  const [placesData, setPlacesData] = useState({
+    title: "",
+    image: "",
+    pickedLocation: "",
+    mapImage: "",
+    address: "",
+  });
 
   // validation state
-  const [validation, setValition] = useState({
+  const [validation, setValidation] = useState({
     titleValid: false,
     imageValid: false,
     MapUriValid: false,
@@ -23,62 +30,62 @@ export default function AddPlace({ navigation }) {
 
   const { addPlace } = usePlaceContext();
 
-  const addPlaceHandler = () => {
-    const validTitle = title.trim().length;
-
-    if (
-      !validTitle ||
-      !imageUri.length ||
-      !coordinates.latitude ||
-      !mapUri.length
-    ) {
-      setValition({
-        titleValid: !validTitle,
-        imageValid: !imageUri,
-        MapUriValid: !mapUri,
-      });
-      Alert.alert("Invalid Cradentials", "Enter right Cradential");
-      return;
-    } else {
-      addPlace({
-        title,
-        imageUri,
-        coordinates,
-        mapUri,
-        address,
-      });
-      navigation.goBack();
-    }
-  };
+  const addPlaceHandler = useCallback(() => {
+    // const validTitle = title.trim().length;
+    // if (
+    //   !validTitle ||
+    //   !imageUri.length ||
+    //   !coordinates.latitude ||
+    //   !mapUri.length
+    // ) {
+    //   setValidation({
+    //     titleValid: !validTitle,
+    //     imageValid: !imageUri,
+    //     MapUriValid: !mapUri,
+    //   });
+    //   Alert.alert("Invalid Credentials", "Enter right Credentials");
+    //   return;
+    // } else {
+    //   addPlace({
+    //     title,
+    //     imageUri,
+    //     coordinates,
+    //     mapUri,
+    //     address,
+    //   });
+    //   navigation.goBack();
+    // }
+  }, []);
 
   return (
     <View style={styles.formContainer}>
       <AppInput
-        isTitleValid={validation.titleValid}
         label={"Title"}
-        title={title}
-        setTitle={setTitle}
+        titleValue={placesData.title}
+        setPlacesData={setPlacesData}
+        // error={}
       />
       <AppImagePicker
-        isImageUriValid={validation.imageValid}
-        imageUri={imageUri}
-        setImageUri={setImageUri}
+        imageUri={placesData.image}
+        setPlacesData={setPlacesData}
+        // error={}
       />
       <LocationPicker
-        setAddress={setAddress}
-        setCoordinates={setCoordinates}
-        mapUri={mapUri}
-        setMapUri={setMapUri}
-        isLocationValid={validation.MapUriValid}
+        setPlacesData={setPlacesData}
+        mapImageUri={placesData.mapImage}
+        // error={}
       />
 
       <AppButton onPress={addPlaceHandler}>Add Place</AppButton>
     </View>
   );
-}
+};
+
+export default memo(AddPlace);
 
 const styles = StyleSheet.create({
   formContainer: {
-    padding: 18,
+    paddingHorizontal: wp(3),
+    paddingVertical: hp(1),
   },
 });

@@ -1,32 +1,19 @@
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  Linking,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import React, { useState } from "react";
-
-import { Colors } from "../../config/colors/colors";
+import { Alert, Linking, StyleSheet, View } from "react-native";
+import { memo, useCallback, useState } from "react";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 import * as ImagePicker from "expo-image-picker";
-import LoadingOverlay from "../ui/LoadingOverlay";
 import OutlineButton from "../ui/OutlineButton";
+import AppImage from "../ui/AppImage";
 
-export default function AppImagePicker({
-  imageUri,
-  setImageUri,
-  isImageUriValid,
-}) {
+const AppImagePicker = ({ imageUri, setPlacesData, error }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const takeImageHandler = async () => {
+  const takeImageFromCamera = useCallback(async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
     if (!permission.granted) {
       Alert.alert(
-        "Camera Access Required",
+        "Camera Permission Required",
         "To use the camera feature, please grant permission from your device settings.",
         [
           {
@@ -49,20 +36,27 @@ export default function AppImagePicker({
           quality: 1,
           aspect: [16, 7],
         });
-        setImageUri(image.assets[0].uri);
         setIsLoading(false);
+        if (image.assets) {
+          setPlacesData((pre) => {
+            return {
+              ...pre,
+              image: image?.assets[0]?.uri,
+            };
+          });
+        }
       } catch (err) {
         setIsLoading(false);
-        alert("Fail to Take the Image");
+        alert("You Have Not Taken The Image From Camera");
       }
     }
-  };
+  }, []);
 
-  const uploadImageHandler = async () => {
+  const pickImageFromMedia = useCallback(async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       Alert.alert(
-        "Media Access Required",
+        "Media Permission Required",
         "To access the Media feature, please grant permission from your device settings.",
         [
           {
@@ -85,74 +79,57 @@ export default function AppImagePicker({
           quality: 1,
           aspect: [14, 7],
         });
-        setImageUri(image.assets[0].uri);
         setIsLoading(false);
+        if (image.assets) {
+          setPlacesData((pre) => {
+            return {
+              ...pre,
+              image: image?.assets[0]?.uri,
+            };
+          });
+        }
       } catch (err) {
         setIsLoading(false);
-        alert("Fail to Upload the Image");
+        alert("You Have Not Picked The Image From Media");
       }
     }
-  };
+  }, []);
 
   return (
     <View>
-      <View style={styles.previewContainer}>
-        {isLoading ? (
-          <LoadingOverlay />
-        ) : imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.image} />
-        ) : (
-          <Text
-            style={[styles.previewFallback, isImageUriValid && styles.error]}
-          >
-            No Image Taken Yet!
-          </Text>
-        )}
-      </View>
+      <AppImage
+        fallbackText={"No Image Taken Yet!"}
+        isLoading={isLoading}
+        error={error}
+        imageUri={imageUri}
+      />
+
       <View style={styles.btnsContainer}>
         <View style={styles.btn}>
-          <OutlineButton iconName={"camera"} onPress={takeImageHandler}>
+          <OutlineButton iconName={"camera"} onPress={takeImageFromCamera}>
             Take Image
           </OutlineButton>
         </View>
         <View style={styles.btn}>
-          <OutlineButton iconName={"image"} onPress={uploadImageHandler}>
+          <OutlineButton iconName={"image"} onPress={pickImageFromMedia}>
             Upload Image
           </OutlineButton>
         </View>
       </View>
     </View>
   );
-}
+};
+
+export default memo(AppImagePicker);
 
 const styles = StyleSheet.create({
-  previewContainer: {
-    height: 180,
-    backgroundColor: Colors.color1100,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  image: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-  },
-  previewFallback: {
-    color: "#00000094",
-    fontFamily: "openSans",
-  },
   btnsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    gap: 30,
+    gap: wp(6),
   },
   btn: {
     flex: 1,
-  },
-  error: {
-    color: "tomato",
   },
 });

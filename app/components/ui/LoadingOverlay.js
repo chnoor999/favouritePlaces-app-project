@@ -1,21 +1,26 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
-import React from "react";
-import { Colors } from "../../config/colors/colors";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { memo } from "react";
 
-export default function LoadingOverlay({ backgroundColor }) {
+const LoadingOverlay = ({ backgroundColor, loadingColor, absolute }) => {
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <ActivityIndicator size={"large"} color={"#000"} />
+    <View
+      style={[
+        styles.container,
+        { backgroundColor },
+        absolute && { position: "absolute", width: "100%", height: "100%" },
+      ]}
+    >
+      <ActivityIndicator size={"large"} color={loadingColor} />
     </View>
   );
-}
+};
+
+export default memo(LoadingOverlay);
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    position: "absolute",
-    width: "100%",
-    height: "100%",
   },
 });

@@ -1,111 +1,71 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
-
-import { Colors } from "../../config/colors/colors";
+import { View } from "react-native";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getMapImage } from "../../util/googleMap";
 
 import OutlineButton from "../ui/OutlineButton";
-import LoadingOverlay from "../ui/LoadingOverlay";
+import AppImage from "../ui/AppImage";
 
-export default function LocationPicker({
-  setCoordinates,
-  setMapUri,
-  mapUri,
-  setAddress,
-  isLocationValid,
-}) {
+const LocationPicker = ({ setPlacesData, error, mapImageUri }) => {
   const route = useRoute();
   const navigation = useNavigation();
 
   const coords = route.params?.coordinates;
   const address = route.params?.address;
 
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const pickOnMapHandler = async () => {
-    setisLoading(true);
+  const pickOnMapHandler = useCallback(async () => {
     navigation.navigate("mapScreen", coords && { coords });
-    setisLoading(false);
-  };
+  }, [coords]);
 
   const getMapImageHandler = async () => {
     try {
-      setisLoading(true);
+      setIsLoading(true);
       const response = await getMapImage({
         lat: coords.latitude,
         lng: coords.longitude,
       });
-      setMapUri(response);
-      setisLoading(false);
+      setPlacesData((pre) => {
+        return {
+          ...pre,
+          mapImage: response,
+        };
+      });
+      setIsLoading(false);
     } catch (err) {
-      alert("Error try agian later or Check your Internet Connection");
-      setisLoading(false);
+      alert("Error try again later or Check your Internet Connection");
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (coords) {
-      setCoordinates(coords);
+    if (coords && address) {
+      setPlacesData((pre) => {
+        return {
+          ...pre,
+          pickedLocation: coords,
+          address: address,
+        };
+      });
       getMapImageHandler();
-      setAddress(address);
     }
   }, [coords, address]);
 
   return (
     <View>
-      <View style={styles.previewContainer}>
-        {isLoading ? (
-          <LoadingOverlay />
-        ) : mapUri ? (
-          <Image source={{ uri: mapUri }} style={styles.image} />
-        ) : (
-          <Text
-            style={[styles.previewFallback, isLocationValid && styles.error]}
-          >
-            No Location Picked Yet!
-          </Text>
-        )}
-      </View>
+      <AppImage
+        fallbackText={"No Location Picked Yet!"}
+        isLoading={isLoading}
+        error={error}
+        imageUri={mapImageUri}
+      />
 
-      <View style={styles.btnsContainer}>
-        <View style={styles.btn}>
-          <OutlineButton iconName={"map"} onPress={pickOnMapHandler}>
-            Pick on Map
-          </OutlineButton>
-        </View>
-      </View>
+      <OutlineButton iconName={"map"} onPress={pickOnMapHandler}>
+        Pick on Map
+      </OutlineButton>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  previewContainer: {
-    height: 180,
-    backgroundColor: Colors.color1100,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  image: {
-    flex: 1,
-    height: "100%",
-    width: "100%",
-  },
-  previewFallback: {
-    color: "#00000094",
-    fontFamily: "openSans",
-  },
-  btnsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 30,
-  },
-  btn: {
-    flex: 1,
-  },
-  error: {
-    color: "tomato",
-  },
-});
+export default memo(LocationPicker);

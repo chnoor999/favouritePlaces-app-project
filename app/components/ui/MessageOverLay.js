@@ -1,24 +1,26 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Colors } from '../../config/colors/colors'
+import { StyleSheet, Text, View } from "react-native";
+import { memo } from "react";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
-export default function MessageOverLay({meesage}) {
+const MessageOverLay = ({ message }) => {
   return (
-    <View style={styles.contaner}>
-      <Text style={styles.txt}>{meesage}</Text>
+    <View style={styles.container}>
+      <Text style={styles.txt}>{message}</Text>
     </View>
-  )
-}
+  );
+};
+
+export default memo(MessageOverLay);
 
 const styles = StyleSheet.create({
-    contaner:{
-        flex:1,
-        alignItems:"center",
-        justifyContent:"center",
-        backgroundColor:Colors.color100
-    },
-    txt:{
-        color:"#ffffffab",
-        fontFamily:"openSans"
-    }
-})
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  txt: {
+    color: "#ffffffab",
+    fontFamily: "openSans",
+    fontSize: hp(1.7),
+  },
+});

@@ -1,12 +1,12 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { createContext, useContext, useEffect, useState } from "react";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const placeContext = createContext({
   place: [],
+  setPlace: () => {},
   addPlace: () => {},
-  setPlaceFromAsyncStorage: () => {},
-  deletePlace:()=>{}
+  deletePlace: () => {},
 });
 
 export const PlaceContextprovider = ({ children }) => {
@@ -14,14 +14,6 @@ export const PlaceContextprovider = ({ children }) => {
 
   const addPlace = (placeObj) => {
     setPlace((pre) => [{ id: Math.random(), ...placeObj }, ...pre]);
-  };
-
-  const setPlaceFromAsyncStorage = async () => {
-    const res = await AsyncStorage.getItem("place");
-    if (res) {
-      setPlace(JSON.parse(res));
-    }
-    return res;
   };
 
   const deletePlace = (id) => {
@@ -36,9 +28,9 @@ export const PlaceContextprovider = ({ children }) => {
 
   const value = {
     place,
+    setPlace,
     addPlace,
-    setPlaceFromAsyncStorage,
-    deletePlace
+    deletePlace,
   };
 
   return (

@@ -1,9 +1,10 @@
-import { StatusBar, StyleSheet } from "react-native";
+import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import PlacesStack from "./app/screens/navigation/PlacesStack";
 import { Colors } from "./app/config/colors/colors";
 import { PlaceContextprovider } from "./app/store/place-context";
+
+import PlacesStack from "./app/screens/navigation/PlacesStack";
 
 export default function App() {
   const [fontLoaded] = useFonts({
@@ -27,5 +28,3 @@ export default function App() {
     </>
   );
 }
-
-const styles = StyleSheet.create({});

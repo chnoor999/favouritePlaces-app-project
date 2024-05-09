@@ -1,27 +1,34 @@
 import { FlatList, StyleSheet } from "react-native";
-import React from "react";
+import { memo } from "react";
+import { usePlaceContext } from "../../store/place-context";
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
-import ListItem from "./ListItem";
+import PlaceItem from "./PlaceItem";
+import MessageOverLay from "../ui/MessageOverLay";
 
-export default function PlaceList({ data }) {
-  const dataLength = data.length;
+const PlaceList = () => {
+  const { place } = usePlaceContext();
+
+  if (!place.length) {
+    return <MessageOverLay message={"No Favourite Place Added Yet!"} />;
+  }
 
   return (
     <FlatList
-      data={data}
-      renderItem={({ item ,index}) => {
-        return (
-          <ListItem
-            title={item.title}
-            imageUri={item.imageUri}
-            address={item.address}
-            item={item}
-            lastList={index === dataLength-1}
-          />
-        );
+      data={place}
+      keyExtractor={(_, index) => index.toString()}
+      contentContainerStyle={styles.contentContainerStyle}
+      renderItem={({ item }) => {
+        return <PlaceItem item={item} />;
       }}
     />
   );
-}
+};
 
-const styles = StyleSheet.create({});
+export default memo(PlaceList);
+
+const styles = StyleSheet.create({
+  contentContainerStyle: {
+    paddingVertical: hp(1),
+  },
+});

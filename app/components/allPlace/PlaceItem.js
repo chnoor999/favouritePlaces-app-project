@@ -1,10 +1,14 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
-
+import { memo } from "react";
 import { Colors } from "../../config/colors/colors";
 import { useNavigation } from "@react-navigation/native";
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from "react-native-responsive-screen";
+import { Entypo } from "@expo/vector-icons";
 
-export default function ListItem({ imageUri, title, address, item, lastList }) {
+const PlaceItem = ({ item }) => {
   const navigation = useNavigation();
 
   const placeListHandler = () => {
@@ -15,50 +19,55 @@ export default function ListItem({ imageUri, title, address, item, lastList }) {
     <TouchableOpacity
       onPress={placeListHandler}
       activeOpacity={0.9}
-      style={[styles.container, { marginBottom: lastList && 50 }]}
+      style={[styles.container]}
     >
       <View style={styles.imgContainer}>
-        <Image style={styles.image} source={{ uri: imageUri }} />
+        <Image style={styles.image} source={{ uri: item.imageUri }} />
       </View>
-      <View style={styles.detialContainer}>
-        <Text style={styles.title}>{title}</Text>
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>{item.title}</Text>
         <Text numberOfLines={2} style={styles.address}>
-          {address}
+          <Entypo name="address" size={hp(1.6)} color="black" />
+          {item.address}
         </Text>
       </View>
     </TouchableOpacity>
   );
-}
+};
+
+export default memo(PlaceItem);
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.color1100,
     flex: 1,
-    height: 120,
+    backgroundColor: Colors.color1100,
+    height: hp(15),
     borderRadius: 6,
     flexDirection: "row",
     overflow: "hidden",
-    marginHorizontal: 20,
-    marginTop: 25,
+    marginHorizontal: wp(3),
+    marginBottom: hp(2),
   },
   imgContainer: {
-    flex: 1.4,
+    width: wp(40),
   },
   image: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
   },
-  detialContainer: {
-    flex: 2.1,
+  contentContainer: {
+    flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    alignItems: "center",
+    paddingHorizontal: wp(2),
+    paddingVertical: hp(1),
+    gap: hp(0.5),
   },
   title: {
     fontFamily: "openSansBold",
-    marginVertical: 6,
+    fontSize: hp(1.8),
   },
   address: {
     fontFamily: "openSans",
+    fontSize: hp(1.4),
   },
 });
