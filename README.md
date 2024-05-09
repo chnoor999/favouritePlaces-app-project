@@ -24,3 +24,9 @@ Place data is stored in AsyncStorage.
 
 Custom Fonts:
 The app utilizes custom fonts for styling
+
+Full Responsiveness:
+Implementing full responsiveness ensures that your app adapts flawlessly to various screen sizes using react native responsive.
+
+Performance Optimization:
+Optimizing the app for performance ensures that it runs smoothly and efficiently, providing users with a seamless experience.
